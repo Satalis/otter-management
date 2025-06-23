@@ -55,6 +55,7 @@ module.exports = {
     quote: { enabled: true },
     suggestion: { enabled: true },
     update: { enabled: true },
+    listrole: { enabled: true },
   },
 
   // Activer ou désactiver certaines fonctionnalités du bot
