@@ -55,8 +55,5 @@ module.exports = {
     quote: { enabled: true },
     suggestion: { enabled: true },
     update: { enabled: true },
-    help: { enabled: false, message: "Commande désactivée." },
-    link: { enabled: false },
-    verify: { enabled: false }
   }
 };
