@@ -24,7 +24,7 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setTitle(`Rôle : ${role.name}`)
             .addFields(
-                { name: 'Nom du rôle', value: role.name},
+                { name: 'Nom du rôle', value: `• ${role.name}`},
                 { name: 'Nombre de membres', value: `${members.length}`},
                 { name: 'Pseudo des membres', value: members.length > 0 ? members.join('\n') : 'Aucun membre.' },
                 { name: 'Date du rôle', value: `<t:${Math.floor(role.createdTimestamp / 1000)}:F>` }
