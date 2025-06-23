@@ -26,12 +26,12 @@ const isDev = env === 'dev';
 
 let settings = {};
 try {
-  if (isDev && fs.existsSync('./settings-dev.json')) {
-    console.log("✅ Environnement de développement – Chargement de settings-dev.json");
-    settings = require('./settings-dev.json');
-  } else if (!isDev && fs.existsSync('./settings.json')) {
-    console.log("✅ Environnement de production – Chargement de settings.json");
-    settings = require('./settings.json');
+  if (isDev && fs.existsSync('./settings-dev.js')) {
+    console.log("✅ Environnement de développement – Chargement de settings-dev.js");
+    settings = require('./settings-dev.js');
+  } else if (!isDev && fs.existsSync('./settings.js')) {
+    console.log("✅ Environnement de production – Chargement de settings.js");
+    settings = require('./settings.js');
   } else {
     console.warn("⚠️ Aucun fichier de paramètres trouvé. Certaines fonctionnalités pourraient ne pas fonctionner.");
   }
@@ -51,6 +51,7 @@ const bot = new Client({
 });
 
 bot.commands = new Collection();
+bot.settings = settings;
 bot.rolePermissions = {
   "Le Parrain": 7,
   "Loutre Lanceuse de Pantoufles": 6,
@@ -85,8 +86,12 @@ const { createMonthlyBestOf } = require('@helpers/createMonthlyBestOf');
 bot.on('ready', () => {
   console.log(`Bot opérationnel sous le nom: ${bot.user.tag}!`);
 
-  const guildId = settings.guildId;
-  const channelId = settings.channelId;
+  const guildId = bot.settings.guildId;
+  const channelId = bot.settings.channelId;
+  if (!guildId || !channelId) {
+    console.error('guildId ou channelId manquant dans les paramètres.');
+    return;
+  }
 
   const guild = bot.guilds.cache.get(guildId);
   if (guild) {
@@ -120,12 +125,20 @@ const verifyWord = require('./Helpers/verifyWord');
 bot.removeAllListeners('messageCreate');
 
 bot.on('messageCreate', async (message) => {
-  const exceptionsChannels = ['704404247445373029', '791052204823281714'];
-  if (exceptionsChannels.includes(message.channel.id)) return;
+  const exceptionsChannels = bot.settings.ids?.exceptionChannels;
+  if (!Array.isArray(exceptionsChannels)) {
+    console.error('exceptionChannels non défini.');
+  } else if (exceptionsChannels.includes(message.channel.id)) {
+    return;
+  }
   if (message.author.bot || message.mentions.everyone) return;
 
-  const exceptionsUsers = ['173439968381894656', '143762806574022656', '72405181253287936'];
-  if (!exceptionsUsers.includes(message.author.id)) await verifyWord(message, bot);
+  const exceptionsUsers = bot.settings.ids?.exceptionUsers;
+  if (!Array.isArray(exceptionsUsers)) {
+    console.error('exceptionUsers non défini.');
+  } else if (!exceptionsUsers.includes(message.author.id)) {
+    await verifyWord(message, bot);
+  }
 
   if (!message.mentions.has(bot.user)) return;
   await saveQuote(message, bot);
