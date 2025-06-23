@@ -7,13 +7,11 @@ const {dateFormatLog} = require('./logTools');
  */
 async function goodbyeMessage(member) {
     try {
-        let channelId;
-
-        // Vérifier la branche pour définir le bon canal
-        if (process.env.GITHUB_BRANCH === 'main') {
-            channelId = '747143537048682558'; // Canal pour la branche principale
-        } else {
-            channelId = '653689680906420238'; // Canal pour d'autres branches
+        const settings = member.client.settings || {};
+        const channelId = settings.ids?.goodbyeChannel;
+        if (!channelId) {
+            console.warn(`${await dateFormatLog()}Aucun canal d'au revoir défini dans les paramètres.`);
+            return;
         }
 
         // Récupérer le canal

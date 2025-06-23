@@ -6,8 +6,12 @@ const {dateFormatLog} = require('./logTools');
 
 async function saveQuote(message, bot) {
 
-  const botDevId = "1110950106842284072";
-  const botMainId = "1106850900682747974";
+  const settings = bot.settings || {};
+  const botDevId = settings.ids?.botDevId;
+  const botMainId = settings.ids?.botMainId;
+  if (!botDevId || !botMainId) {
+    console.warn('[quoteSystem] botDevId ou botMainId manquant dans les paramètres.');
+  }
 
   const alreadySave = [
     "Je sais déjà qu'il a dis ça !",

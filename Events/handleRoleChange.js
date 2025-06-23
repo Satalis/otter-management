@@ -53,8 +53,14 @@ module.exports = async (bot, oldMember, newMember) => {
   rolePermissions = bot.rolePermissions;
 try{
   const timestamp = new Date().toISOString();
-  const guildIds = ["675543520425148416", "653689680906420235"];
+  const settings = bot.settings || {};
+  const guildIds = settings.ids?.guildIdsRoleChange;
   const guildId = newMember.guild.id;
+
+  if (!Array.isArray(guildIds)) {
+    console.error('guildIdsRoleChange non défini.');
+    return;
+  }
 
   if (!guildIds.includes(guildId)) return;
 

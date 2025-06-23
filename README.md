@@ -51,5 +51,12 @@ FTP_HOST=ftp.tonsite.com
 FTP_USER=ton_user
 FTP_PASS=ton_mdp
 
-### Le démarrer 
+### Le démarrer
 node bot.js
+
+### Configurer les paramètres Discord
+
+Un fichier `settings-example.js` est fourni pour vous aider à renseigner toutes
+les ID nécessaires (salons, rôles, utilisateurs, etc.). Copiez ce fichier en
+`settings.js` (et `settings-dev.js` si besoin) puis remplissez chaque valeur avec
+vos propres identifiants Discord.
