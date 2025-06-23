@@ -61,7 +61,6 @@ vos propres identifiants Discord.
 La configuration comporte désormais une section `commands` permettant d'activer
 ou de désactiver chaque commande du bot&nbsp;:
 
-```js
 commands: {
   add: { enabled: true },
   aide: { enabled: true },
@@ -71,7 +70,6 @@ commands: {
   suggestion: { enabled: true },
   update: { enabled: true },
 }
-```
 
 Mettez `enabled` à `false` pour bloquer une commande et utilisez `message` pour
 personnaliser la réponse lorsqu'elle est désactivée.
