@@ -19,7 +19,7 @@ module.exports = {
         await interaction.deferReply({ ephemeral: true });
         await interaction.guild.members.fetch();
 
-        const members = role.members.map(m => m.displayName || m.user.username);
+        const members = role.members.map(m => `• ${m.displayName || m.user.username}`);
 
         const embed = new EmbedBuilder()
             .setTitle(`Rôle : ${role.name}`)
