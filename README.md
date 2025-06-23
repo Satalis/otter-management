@@ -15,7 +15,7 @@ Chantal est un bot Discord avancé conçu pour animer et gérer une communauté 
 - 📌 **Citations** : Système de sauvegarde et suppression des meilleures citations des membres.
 - 📜 **Best-of mensuel** : Génération automatique d’un best-of des citations chaque mois.
 - 🔄 **Mise à jour des rôles** : Synchronisation automatique des rôles Discord en fonction des données Firestore.
-- 📋 **Liste des membres par rôle** : `/listrole` affiche les membres possédant un rôle, leur nombre et la date de création du rôle.
+- 📋 **Liste des membres par rôle** : `/listrole` affiche le nom du rôle et ses membres (chacun précédé d'une puce), leur nombre et la date de création du rôle.
 
 ### 🔹 Intégrations et API
 - 📰 **Flux RSS Lodestone** : Surveillance des news FFXIV et publication automatique sur Discord.
