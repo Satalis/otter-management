@@ -12,3 +12,5 @@ package-lock.json
 .github/
 firebase.json
 firebase-test.json
+settings.json
+settings-dev.json
