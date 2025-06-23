@@ -74,5 +74,20 @@ commands: {
 Mettez `enabled` à `false` pour bloquer une commande et utilisez `message` pour
 personnaliser la réponse lorsqu'elle est désactivée.
 
+De la même manière, une section `features` permet d'activer ou non certaines
+fonctionnalités du bot :
+
+features: {
+  rssFeed: true,
+  monthlyBestOf: true,
+  verifyWord: true,
+  quoteSystem: true,
+  welcomeMessages: true,
+  goodbyeMessages: true,
+  keepAlive: true,
+}
+
+Passez la valeur à `false` pour désactiver l'une de ces fonctionnalités.
+
 ### Le démarrer
 node bot.js

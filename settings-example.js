@@ -55,5 +55,16 @@ module.exports = {
     quote: { enabled: true },
     suggestion: { enabled: true },
     update: { enabled: true },
+  },
+
+  // Activer ou désactiver certaines fonctionnalités du bot
+  features: {
+    rssFeed: true,
+    monthlyBestOf: true,
+    verifyWord: true,
+    quoteSystem: true,
+    welcomeMessages: true,
+    goodbyeMessages: true,
+    keepAlive: true,
   }
 };
