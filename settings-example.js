@@ -44,5 +44,19 @@ module.exports = {
 
     // Personnes référentes pour la commande /aide
     supportUsers: ["SUPPORT_USER_ID_ONE", "SUPPORT_USER_ID_TWO"]
+  },
+
+  // Activer ou désactiver individuellement les commandes
+  commands: {
+    add: { enabled: true },
+    aide: { enabled: true },
+    delete: { enabled: true },
+    gill: { enabled: true },
+    quote: { enabled: true },
+    suggestion: { enabled: true },
+    update: { enabled: true },
+    help: { enabled: false, message: "Commande désactivée." },
+    link: { enabled: false },
+    verify: { enabled: false }
   }
 };
