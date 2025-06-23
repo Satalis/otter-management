@@ -58,5 +58,21 @@ les ID nécessaires (salons, rôles, utilisateurs, etc.). Copiez ce fichier en
 `settings.js` (et `settings-dev.js` si besoin) puis remplissez chaque valeur avec
 vos propres identifiants Discord.
 
+La configuration comporte désormais une section `commands` permettant d'activer
+ou de désactiver chaque commande du bot&nbsp;:
+
+commands: {
+  add: { enabled: true },
+  aide: { enabled: true },
+  delete: { enabled: true },
+  gill: { enabled: true },
+  quote: { enabled: true },
+  suggestion: { enabled: true },
+  update: { enabled: true },
+}
+
+Mettez `enabled` à `false` pour bloquer une commande et utilisez `message` pour
+personnaliser la réponse lorsqu'elle est désactivée.
+
 ### Le démarrer
 node bot.js
