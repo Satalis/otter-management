@@ -10,7 +10,7 @@ tmp/
 .venv
 package-lock.json
 .github/
-settings-dev.json
-settings.json
 firebase.json
 firebase-test.json
+settings.js
+settings-dev.js

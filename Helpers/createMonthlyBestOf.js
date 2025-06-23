@@ -53,13 +53,13 @@ async function createMonthlyBestOf(bot) {
         const date = new Date();
 
         // Définition des channels
-        const bestOfChannelID = process.env.GITHUB_BRANCH === 'main'
-            ? '675910340936204288' // Channel Best-Of (Main)
-            : '1252901298798460978'; // Channel Best-Of (Dev)
-
-        const notificationChannelID = process.env.GITHUB_BRANCH === 'main'
-            ? '675682104327012382' // Channel Notifications (Main)
-            : '653689680906420238'; // Channel Notifications (Dev)
+        const settings = bot.settings || {};
+        const bestOfChannelID = settings.ids?.bestOfChannel;
+        const notificationChannelID = settings.ids?.notificationChannel;
+        if (!bestOfChannelID || !notificationChannelID) {
+            console.error(await dateFormatLog() + '[BestOf] IDs de channels manquants dans les paramètres.');
+            return;
+        }
 
         // Récupérer les channels
         const bestOfChannel = bot.channels.cache.get(bestOfChannelID);

@@ -11,10 +11,12 @@ async function welcomeMessage(member) {
     try {
         console.log(await dateFormatLog() + member.displayName + " a rejoint le serveur Discord !")
         
-        let channelWelcomeID = "";
-        // Trouver le canal "bienvenue"
-        if(process.env.GITHUB_BRANCH == "main"){ channelWelcomeID = '675910340936204288'}
-        else{ channelWelcomeID = '653689680906420238' }
+        const settings = member.client.settings || {};
+        const channelWelcomeID = settings.ids?.welcomeChannel;
+        if (!channelWelcomeID) {
+            console.warn(await dateFormatLog() + 'Aucun salon de bienvenue défini dans les paramètres.');
+            return;
+        }
 
         const welcomeChannel = await member.guild.channels.cache.get(channelWelcomeID);
         if (welcomeChannel) {
@@ -53,16 +55,13 @@ async function welcomeMessage(member) {
 
 async function assignRoles(member) {
     try {
+        const settings = member.client.settings || {};
         // IDs des rôles à attribuer
-        let role1ID = ''; // Visiteur
-        let role2ID = ''; // Possible loutre
-
-        if (process.env.GITHUB_BRANCH === 'main') {
-            role1ID = '675691652349689856';
-            role2ID = '879754348727509052';
-        } else {
-            role1ID = '1312043806023221268';
-            role2ID = '1312043774246912081';
+        let role1ID = settings.ids?.welcomeRoles?.[0]; // Visiteur
+        let role2ID = settings.ids?.welcomeRoles?.[1]; // Possible loutre
+        if (!role1ID || !role2ID) {
+            console.error(await dateFormatLog() + 'ID de rôle manquant dans les paramètres.');
+            return;
         }
         
         // Récupération des rôles depuis la guilde

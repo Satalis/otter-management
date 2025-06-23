@@ -8,11 +8,20 @@ module.exports = {
 
     async run(bot, interaction, args) {
         try {
+            const supportIds = interaction.client.settings.ids?.supportUsers;
+            let supportMentions = 'un admin';
+            if (Array.isArray(supportIds) && supportIds.length > 0) {
+                supportMentions = supportIds.slice(0, 2).map(id => `<@${id}>`).join(' ou ');
+            } else {
+                console.warn('supportUsers non configuré.');
+            }
+
             // Créer l'embed
             const embed = new EmbedBuilder()
                 .setTitle("📖 Liste des commandes")
-                .setDescription("Voici la liste des commandes disponibles pour **Chantal**." + 
-                    "\nBesoin de plus d'aide ? Contactez : <@207992750988197889> ou <@239407042182381588> !"
+                .setDescription(
+                    `Voici la liste des commandes disponibles pour **Chantal**.` +
+                    `\nBesoin de plus d'aide ? Contactez : ${supportMentions} !`
                 )
                 .addFields(
                     { name: "/gill", value: "Affiche les commandes de notre économie fun : les Gills ! :fish:" },

@@ -1,197 +1,177 @@
-/* INFOS
-Pour rajouter des valeurs par défaut sur les membres, c'est dans Commands/add.js
-*/
+require('dotenv').config();
+console.log('DEBUG TEST_ENV =', process.env.TEST_ENV);
+console.log('DEBUG 🔍 FIREBASE_CREDENTIALS =', process.env.FIREBASE_CREDENTIALS);
 
-// Charge les modules alias
 require('module-alias/register');
+const fs = require('fs');
 const https = require("https");
-
-//HEALTH CHECK UP DE L'APPLICATION
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 8000; // Utilisez la variable d'environnement PORT fournie par Heroku ou un port par défaut
+const PORT = process.env.PORT || 8000;
 
 app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
-
 app.listen(PORT, () => {
   console.log(`Le serveur est en écoute sur le port ${PORT}`);
 });
-//FIN DE HEALTH CHECK UP DE L'APPLICATION
 
-require('dotenv').config();
-
-const {dateFormatLog} = require('./Helpers/logTools');
-
+const { dateFormatLog } = require('./Helpers/logTools');
+const { Client, GatewayIntentBits, Collection, InteractionType } = require('discord.js');
 const Discord = require('discord.js');
-const intents = new Discord.IntentsBitField(3276799) // Indents used for the bot
-const bot = new Discord.Client({intents});
 
+// === 🔧 CONFIGURATION ENVIRONNEMENT ===
+const env = process.env.TEST_ENV;
+const isDev = env === 'dev';
+
+let settings = {};
+try {
+  if (isDev && fs.existsSync('./settings-dev.js')) {
+    console.log("✅ Environnement de développement – Chargement de settings-dev.js");
+    settings = require('./settings-dev.js');
+  } else if (!isDev && fs.existsSync('./settings.js')) {
+    console.log("✅ Environnement de production – Chargement de settings.js");
+    settings = require('./settings.js');
+  } else {
+    console.warn("⚠️ Aucun fichier de paramètres trouvé. Certaines fonctionnalités pourraient ne pas fonctionner.");
+  }
+} catch (err) {
+  console.error("❌ Erreur lors du chargement des paramètres :", err);
+}
+// ======================================
+
+const bot = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.MessageContent
+  ]
+});
+
+bot.commands = new Collection();
+bot.settings = settings;
 bot.rolePermissions = {
   "Le Parrain": 7,
   "Loutre Lanceuse de Pantoufles": 6,
   "Loutre Sottocapo": 5,
   "Enrôloutre": 4,
   "Loutre Mafieuse": 3,
-  //"Loutre Naissante": 2
 };
 
 const loadCommands = require('./Loader/loadCommands');
 const loadEvents = require('./Loader/loadEvents');
 const loadDatabase = require('./Loader/loadDatabase');
-
 const loadSlashCommands = require('./Loader/loadSlashCommands');
 
 const timestamp = new Date().toISOString();
+bot.color = "#95A5A6";
 
-bot.color = "#95A5A6" // Set bot color
+console.log(timestamp + ': Connexion à Discord...');
+bot.login(process.env.DISCORD_TOKEN);
+console.log('Connexion validée !');
 
-bot.commands = new Discord.Collection(); // Create collection of commands
+bot.db = loadDatabase();
+loadCommands(bot);
+loadEvents(bot);
 
-console.log(timestamp + ': Connexion à Discord...')
-bot.login(process.env.DISCORD_TOKEN); // Login to Discord
-console.log('Connexion validée !')
-
-bot.db = loadDatabase()
-
-loadCommands(bot); // Load all commands in collection, to the bot
-loadEvents(bot); // Load all commands in collection, to the bot
-
-
-// Configuration des flux RSS et des canaux
 const { checkRSS } = require('./Helpers/rssHandler');
 const RSS_FEEDS = [
-  { url: 'https://fr.finalfantasyxiv.com/lodestone/news/news.xml' }, // Canal de maintenance
-  { url: 'https://fr.finalfantasyxiv.com/lodestone/news/topics.xml' }  // Canal des annonces importantes
+  { url: 'https://fr.finalfantasyxiv.com/lodestone/news/news.xml' },
+  { url: 'https://fr.finalfantasyxiv.com/lodestone/news/topics.xml' }
 ];
-
-//Pour les best-of des quotes
 const { createMonthlyBestOf } = require('@helpers/createMonthlyBestOf');
 
-// Quand le bot est prêt et connecté
 bot.on('ready', () => {
-    console.log(`Bot opérationnel sous le nom: ${bot.user.tag}!`);
-    if(process.env.GITHUB_BRANCH === 'main'){
-    // Envoyer un message dans le serveur et le channel spécifiés
-    const guild = bot.guilds.cache.get("675543520425148416");
-    if (guild) {
-        const channel = guild.channels.cache.get("1311350221619597455");
-        if (channel) {
-            channel.send('Je suis de nouveau là ! <:otter_pompom:747554032582787163>');
-        } else {
-            console.error('Channel non trouvé');
-        }
+  console.log(`Bot opérationnel sous le nom: ${bot.user.tag}!`);
+
+  const guildId = bot.settings.guildId;
+  const channelId = bot.settings.channelId;
+  if (!guildId || !channelId) {
+    console.error('guildId ou channelId manquant dans les paramètres.');
+    return;
+  }
+
+  const guild = bot.guilds.cache.get(guildId);
+  if (guild) {
+    const channel = guild.channels.cache.get(channelId);
+    if (channel) {
+      channel.send('Je suis de nouveau là ! <:otter_pompom:747554032582787163>');
     } else {
-        console.error('Serveur non trouvé');
+      console.error('Channel non trouvé');
     }
+  } else {
+    console.error('Serveur non trouvé');
+  }
 
-    }
-    bot.user.setActivity('GILLS', { type: 'WATCHING' });
+  bot.user.setActivity('GILLS', { type: 'WATCHING' });
+  loadSlashCommands(bot);
 
-    // Load slash commands
-    loadSlashCommands(bot);
+  setInterval(() => {
+    RSS_FEEDS.forEach(feed => checkRSS(bot, feed.url));
+    createMonthlyBestOf(bot);
+  }, 15 * 60 * 1000);
 
-    // Vérifier les différents flux RSS Lodestone
-    setInterval(() => {
-      RSS_FEEDS.forEach(feed => {
-          checkRSS(bot, feed.url);
-      });
-      //Système du best-of mensuel de quote
-      createMonthlyBestOf(bot);
-  }, 15 * 60 * 1000); // Check toutes les 15m
-
-    // Empêche le sleeping de Koyeb
-    setInterval(() => {
-      https.get("https://google.com", (res) => {
-          //console.log("📡 Keep-alive ping envoyé ! Statut :", res.statusCode);
-      }).on("error", (err) => {
-          console.error("❌ Erreur Keep-Alive :");
-      });
-  }, 2 * 60 * 1000); // Toutes les 2 minutes
+  setInterval(() => {
+    https.get("https://google.com", () => {}).on("error", () => {
+      console.error("❌ Erreur Keep-Alive :");
+    });
+  }, 2 * 60 * 1000);
 });
 
-// SYSTEME DE CITATIONS
 const saveQuote = require('./Helpers/quoteSystem');
-// SYSTEME DE FEUR
-const verifyWord = require('./Helpers/verifyWord')
-
+const verifyWord = require('./Helpers/verifyWord');
 bot.removeAllListeners('messageCreate');
-// Avant d'ajouter le listener
-//console.log(`Nombre de listeners pour 'messageCreate' avant ajout: ${bot.listenerCount('messageCreate')}`);
-// Écouteur d'événements pour les nouveaux messages
+
 bot.on('messageCreate', async (message) => {
-  // Exceptions générales
-  const exceptionsChannels = ['704404247445373029', '791052204823281714']; // Table ronde, Antre mafieuse
-  if (exceptionsChannels.includes(message.channel.id)) return; // Ne pas répondre aux messages de la Table ronde et de l'Antre mafieuse
-  if (message.author.bot) return; // Ne pas répondre aux messages du bot lui-même
-  if (message.mentions.everyone) return; // Ne pas traiter les messages qui mentionnent @everyone ou @here
-  // Feature "feur" et "keen'v"
-  // Appeler `verifyWord` quand un message est reçu
-  const exceptionsUsers = ['173439968381894656', '143762806574022656', '72405181253287936']; // Sefa, Raziel, Velena
-  if (!exceptionsUsers.includes(message.author.id)) await verifyWord(message, bot); // Ne pas répondre "feur" ou "keen'v" aux utilisateurs qui ont un totem d'immunité
-  // Feature "citation"
-  // Appeler `saveQuote` quand un message est reçu
-  if(!message.mentions.has(bot.user)) return; // Ne pas traiter les messages qui ne mentionnent pas le bot
-  
+  const exceptionsChannels = bot.settings.ids?.exceptionChannels;
+  if (!Array.isArray(exceptionsChannels)) {
+    console.error('exceptionChannels non défini.');
+  } else if (exceptionsChannels.includes(message.channel.id)) {
+    return;
+  }
+  if (message.author.bot || message.mentions.everyone) return;
+
+  const exceptionsUsers = bot.settings.ids?.exceptionUsers;
+  if (!Array.isArray(exceptionsUsers)) {
+    console.error('exceptionUsers non défini.');
+  } else if (!exceptionsUsers.includes(message.author.id)) {
+    await verifyWord(message, bot);
+  }
+
+  if (!message.mentions.has(bot.user)) return;
   await saveQuote(message, bot);
 });
-// Après avoir ajouté le listener
-//console.log(`Nombre de listeners pour 'messageCreate' après ajout: ${bot.listenerCount('messageCreate')}`);
- 
-// QUAND UN USER REJOINT LA GUILDE
-const { welcomeMessage, assignRoles } = require('./Helpers/newMember');
 
+const { welcomeMessage, assignRoles } = require('./Helpers/newMember');
 bot.on('guildMemberAdd', async (member) => {
-    try {
-        // Appeler la fonction pour gérer le message de bienvenue
-        await welcomeMessage(member);
-        // Lui assigner ses rôles
-        await assignRoles(member)
-    } catch (error) {
-        console.error('Erreur lors de l’accueil du nouveau membre :', error);
-    }
+  try {
+    await welcomeMessage(member);
+    await assignRoles(member);
+  } catch (error) {
+    console.error('Erreur lors de l’accueil du nouveau membre :', error);
+  }
 });
 
-// MESSAGE DE AU REVOIR
 const goodbyeMessage = require('./Helpers/goodbyeMessage');
-const { analyzeGame } = require('./GillSystem/kaazino');
 bot.on('guildMemberRemove', async (member) => {
   console.log(`${member.displayName} a quitté le serveur ${member.guild.name}.`);
-  await goodbyeMessage(member); // Appel de la fonction goodbyeMessage
+  await goodbyeMessage(member);
 });
 
-
-//When bot join a guild
 bot.on('guildCreate', async (guild) => {
-    await bot.function.linkGuildDB(bot, guild);
+  await bot.function.linkGuildDB(bot, guild);
 });
 
-// Supprimer les écouteurs d'événements existants avant de vérifier le nombre de listeners, pour prévenir de certains bugs.
 bot.removeAllListeners('interactionCreate');
-// Avant d'ajouter le listener
-//console.log(`Nombre de listeners pour 'interactionCreate' avant ajout: ${bot.listenerCount('interactionCreate')}`);
 bot.on('interactionCreate', async (interaction) => {
   if (interaction.isCommand()) {
-    //await interaction.deferReply({ ephemeral: true });
-
-    if(interaction.type === Discord.InteractionType.ApplicationCommand) {
-      // Then take the command name 
-      let command = require(`./Commands/${interaction.commandName}`);
-      console.log(await dateFormatLog() +  '- Commande: ' + command.name + ' par: ' + interaction.user.username);
-      //Run the command
+    if (interaction.type === InteractionType.ApplicationCommand) {
+      const command = require(`./Commands/${interaction.commandName}`);
+      console.log(await dateFormatLog() + '- Commande: ' + command.name + ' par: ' + interaction.user.username);
       command.run(bot, interaction, command.options);
-  } 
-  };
-  bot.hasInteractionCreateListener = true; // Marque que l'écouteur a été ajouté
-})
-// Après avoir ajouté le listener
-//console.log(`Nombre de listeners pour 'interactionCreate' après ajout: ${bot.listenerCount('interactionCreate')}`);
-
-
-
-// Pour les tests, auto update au lancement
-//const updateMemberDAO = require('@websiteUtils/updateMemberDAO');
-//updateMemberDAO(bot)
-
-
+    }
+  }
+  bot.hasInteractionCreateListener = true;
+});
