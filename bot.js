@@ -109,15 +109,21 @@ bot.on('ready', () => {
   loadSlashCommands(bot);
 
   setInterval(() => {
-    RSS_FEEDS.forEach(feed => checkRSS(bot, feed.url));
-    createMonthlyBestOf(bot);
+    if (bot.settings.features?.rssFeed !== false) {
+      RSS_FEEDS.forEach(feed => checkRSS(bot, feed.url));
+    }
+    if (bot.settings.features?.monthlyBestOf !== false) {
+      createMonthlyBestOf(bot);
+    }
   }, 15 * 60 * 1000);
 
-  setInterval(() => {
-    https.get("https://google.com", () => {}).on("error", () => {
-      console.error("❌ Erreur Keep-Alive :");
-    });
-  }, 2 * 60 * 1000);
+  if (bot.settings.features?.keepAlive !== false) {
+    setInterval(() => {
+      https.get("https://google.com", () => {}).on("error", () => {
+        console.error("❌ Erreur Keep-Alive :");
+      });
+    }, 2 * 60 * 1000);
+  }
 });
 
 const saveQuote = require('./Helpers/quoteSystem');
@@ -137,18 +143,24 @@ bot.on('messageCreate', async (message) => {
   if (!Array.isArray(exceptionsUsers)) {
     console.error('exceptionUsers non défini.');
   } else if (!exceptionsUsers.includes(message.author.id)) {
-    await verifyWord(message, bot);
+    if (bot.settings.features?.verifyWord !== false) {
+      await verifyWord(message, bot);
+    }
   }
 
   if (!message.mentions.has(bot.user)) return;
-  await saveQuote(message, bot);
+  if (bot.settings.features?.quoteSystem !== false) {
+    await saveQuote(message, bot);
+  }
 });
 
 const { welcomeMessage, assignRoles } = require('./Helpers/newMember');
 bot.on('guildMemberAdd', async (member) => {
   try {
-    await welcomeMessage(member);
-    await assignRoles(member);
+    if (bot.settings.features?.welcomeMessages !== false) {
+      await welcomeMessage(member);
+      await assignRoles(member);
+    }
   } catch (error) {
     console.error('Erreur lors de l’accueil du nouveau membre :', error);
   }
@@ -157,7 +169,9 @@ bot.on('guildMemberAdd', async (member) => {
 const goodbyeMessage = require('./Helpers/goodbyeMessage');
 bot.on('guildMemberRemove', async (member) => {
   console.log(`${member.displayName} a quitté le serveur ${member.guild.name}.`);
-  await goodbyeMessage(member);
+  if (bot.settings.features?.goodbyeMessages !== false) {
+    await goodbyeMessage(member);
+  }
 });
 
 bot.on('guildCreate', async (guild) => {
