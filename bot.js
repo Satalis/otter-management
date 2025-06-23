@@ -168,7 +168,15 @@ bot.removeAllListeners('interactionCreate');
 bot.on('interactionCreate', async (interaction) => {
   if (interaction.isCommand()) {
     if (interaction.type === InteractionType.ApplicationCommand) {
-      const command = require(`./Commands/${interaction.commandName}`);
+      const command = bot.commands.get(interaction.commandName);
+      if (!command) return;
+      const cfg = bot.settings.commands?.[command.name];
+      if (cfg && cfg.enabled === false) {
+        return interaction.reply({
+          content: cfg.message || "Cette commande est actuellement désactivée.",
+          ephemeral: true
+        });
+      }
       console.log(await dateFormatLog() + '- Commande: ' + command.name + ' par: ' + interaction.user.username);
       command.run(bot, interaction, command.options);
     }
