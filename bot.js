@@ -82,7 +82,7 @@ const RSS_FEEDS = [
   { url: 'https://fr.finalfantasyxiv.com/lodestone/news/news.xml' },
   { url: 'https://fr.finalfantasyxiv.com/lodestone/news/topics.xml' }
 ];
-const REDDIT_FASHION_RSS = 'https://www.reddit.com/r/ffxiv/.rss';
+const REDDIT_FASHION_RSS = 'https://www.reddit.com/r/ffxiv/search.rss?restrict_sr=on&sort=new&q=author%3AGottesstrafe+Fashion+Report+-+Full+Details+-+For+Week+of';
 const { createMonthlyBestOf } = require('@helpers/createMonthlyBestOf');
 
 bot.on('ready', () => {
