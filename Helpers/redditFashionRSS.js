@@ -1,8 +1,12 @@
 const RSSParser = require('rss-parser');
+const { EmbedBuilder } = require('discord.js');
 const { dateFormatLog } = require('./logTools');
 
 const parser = new RSSParser({
-    headers: { 'User-Agent': 'Mozilla/5.0 (OtterBot RSS Reader)' }
+    headers: { 'User-Agent': 'Mozilla/5.0 (OtterBot RSS Reader)' },
+    customFields: {
+        item: ['media:thumbnail', 'media:content']
+    }
 });
 
 /**
@@ -60,7 +64,10 @@ async function checkRedditFashion(bot, rssUrl) {
             }
 
             const link = item.link;
-            const imageUrl = extractImage(item.content || item['content:encoded'] || '');
+            const imageUrl =
+                extractImage(item.content || item['content:encoded'] || '') ||
+                item['media:thumbnail']?.$?.url ||
+                item['media:content']?.$?.url;
 
             console.log(await dateFormatLog() + `[Reddit] ${title} - ${link} - ${imageUrl}`);
 
@@ -77,11 +84,14 @@ async function checkRedditFashion(bot, rssUrl) {
             if (await isDuplicateMessage(channel, title)) {
                 continue;
             }
-            const embed = {
-                title,
-                url: link,
-                image: imageUrl ? { url: imageUrl } : undefined
-            };
+            const embed = new EmbedBuilder()
+                .setTitle(title)
+                .setURL(link);
+
+            if (imageUrl) {
+                embed.setImage(imageUrl);
+            }
+
             await channel.send({ embeds: [embed] });
         }
     } catch (error) {
