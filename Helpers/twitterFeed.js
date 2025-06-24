@@ -4,12 +4,6 @@ const { dateFormatLog } = require('./logTools');
 const { isDuplicateMessage, convertToFrenchTime } = require('./rssHandler');
 
 /**
- * Vérifie et publie les tweets correspondant à un filtre depuis un compte Twitter via Nitter.
- * @param {Client} bot - Instance du bot Discord.
- * @param {string} username - Nom d'utilisateur Twitter.
- * @param {string} titleFilter - Texte devant être présent dans le titre du tweet.
- */
-/**
  *
  * @param {Client} bot - Instance du bot Discord.
  * @param {string} username - Nom d'utilisateur Twitter.
@@ -17,6 +11,7 @@ const { isDuplicateMessage, convertToFrenchTime } = require('./rssHandler');
  * @param {number} [maxAgeMs=5 * 60 * 60 * 1000] - Durée maximale en millisecondes pour laquelle on considère un tweet valide.
  */
 async function checkTwitterFeed(bot, username, titleFilter, maxAgeMs = 5 * 60 * 60 * 1000) {
+
   const rssUrl = `https://nitter.net/${username}/rss`;
   try {
     const feed = await parser.parseURL(rssUrl);
