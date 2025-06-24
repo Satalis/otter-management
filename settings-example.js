@@ -15,6 +15,9 @@ module.exports = {
     // Salon pour les notifications RSS Lodestone
     rssChannel: "YOUR_RSS_CHANNEL_ID",
 
+    // Salon pour les rapports Fashion Report de Reddit
+    redditFashionChannel: "YOUR_REDDIT_FASHION_CHANNEL_ID",
+
     // Salon où publier le best-of mensuel
     bestOfChannel: "YOUR_BEST_OF_CHANNEL_ID",
 
@@ -61,6 +64,7 @@ module.exports = {
   // Activer ou désactiver certaines fonctionnalités du bot
   features: {
     rssFeed: true,
+    redditFashionRSS: true,
     monthlyBestOf: true,
     verifyWord: true,
     quoteSystem: true,
