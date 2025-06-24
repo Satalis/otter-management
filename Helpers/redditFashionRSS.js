@@ -103,9 +103,6 @@ async function checkRedditFashion(bot, rssUrl) {
 
             const imageUrl = getOriginalImage(content, rawImageUrl);
 
-
-            console.log(await dateFormatLog() + `[Reddit] ${title} - ${link} - ${imageUrl}`);
-
             const settings = bot.settings || {};
             const channelId = settings.ids?.redditFashionChannel;
             if (!channelId) {
@@ -117,6 +114,7 @@ async function checkRedditFashion(bot, rssUrl) {
                 continue;
             }
             if (await isDuplicateMessage(channel, title)) {
+                console.log(await dateFormatLog() + `Article déjà publié, passage : ${title}`);
                 continue;
             }
             const embed = {
@@ -126,6 +124,7 @@ async function checkRedditFashion(bot, rssUrl) {
             };
 
             await channel.send({ embeds: [embed] });
+            console.log(await dateFormatLog() + `[Reddit] ${title} - ${link} - ${imageUrl}`);
         }
     } catch (error) {
         console.error(await dateFormatLog() + '[Reddit] Erreur lors de la vérification du flux RSS :', error);
