@@ -71,5 +71,11 @@ module.exports = {
     welcomeMessages: true,
     goodbyeMessages: true,
     keepAlive: true,
+  },
+
+  // Intervalles de vérification (en millisecondes)
+  intervals: {
+    // Intervalle pour le flux Fashion Report de Reddit (ex. 24h)
+    redditFashionRSS: 24 * 60 * 60 * 1000,
   }
 };
