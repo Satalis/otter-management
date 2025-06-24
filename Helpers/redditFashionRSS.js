@@ -1,4 +1,5 @@
 const RSSParser = require('rss-parser');
+const { EmbedBuilder } = require('discord.js');
 const { dateFormatLog } = require('./logTools');
 
 const parser = new RSSParser({
@@ -83,11 +84,14 @@ async function checkRedditFashion(bot, rssUrl) {
             if (await isDuplicateMessage(channel, title)) {
                 continue;
             }
-            const embed = {
-                title,
-                url: link,
-                image: imageUrl ? { url: imageUrl } : undefined
-            };
+            const embed = new EmbedBuilder()
+                .setTitle(title)
+                .setURL(link);
+
+            if (imageUrl) {
+                embed.setImage(imageUrl);
+            }
+
             await channel.send({ embeds: [embed] });
         }
     } catch (error) {
