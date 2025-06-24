@@ -1,4 +1,5 @@
 const RSSParser = require('rss-parser');
+const { EmbedBuilder } = require('discord.js');
 const { dateFormatLog } = require('./logTools');
 
 const parser = new RSSParser({
