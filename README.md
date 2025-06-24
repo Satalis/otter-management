@@ -20,6 +20,7 @@ Chantal est un bot Discord avancé conçu pour animer et gérer une communauté 
 ### 🔹 Intégrations et API
 - 📰 **Flux RSS Lodestone** : Surveillance des news FFXIV et publication automatique sur Discord.
 - 🐦 **Suivi Twitter ciblé** : Récupération de tweets spécifiques via Nitter pour relayer les Fashion Report. Configurez les comptes et mots-clés dans `twitterFeeds`.
+- 💬 **Commande `/twitter`** : permet de vérifier manuellement un compte sur une période donnée.
 
 ### 🔹 Utilitaires
 - 🛠️ **Commandes personnalisées** : `/help`, `/quote`, `/kaazino`, etc.
@@ -101,6 +102,13 @@ twitterFeeds: [
   { username: "KaiyokoStar", filter: "Fashion Report Week" },
   // { username: "Machin", filter: "Fashion" }
 ]
+```
+
+La commande `/twitter` accepte en option un paramètre `periode` pour spécifier la fenêtre de recherche (par exemple `15m`, `1h` ou `24h`).
+Par exemple :
+
+```text
+/twitter utilisateur:KaiyokoStar motcle:"Fashion Report Week" periode:24h
 ```
 
 ### Le démarrer
