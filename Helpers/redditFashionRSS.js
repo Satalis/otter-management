@@ -2,7 +2,10 @@ const RSSParser = require('rss-parser');
 const { dateFormatLog } = require('./logTools');
 
 const parser = new RSSParser({
-    headers: { 'User-Agent': 'Mozilla/5.0 (OtterBot RSS Reader)' }
+    headers: { 'User-Agent': 'Mozilla/5.0 (OtterBot RSS Reader)' },
+    customFields: {
+        item: ['media:thumbnail', 'media:content']
+    }
 });
 
 /**
@@ -34,9 +37,24 @@ async function isDuplicateMessage(channel, title) {
  * @param {string} content - Contenu HTML de l'article.
  * @returns {string|null} - URL de l'image ou null si aucune image trouvée.
  */
+function decodeHtmlEntities(str) {
+    return str
+        ? str
+              .replace(/&amp;/g, '&')
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&quot;/g, '"')
+              .replace(/&#39;/g, "'")
+        : str;
+}
+
+function cleanImageUrl(url) {
+    return url ? decodeHtmlEntities(url) : url;
+}
+
 function extractImage(content) {
     const imgMatch = content && content.match(/<img[^>]+src="([^"]+)"/);
-    return imgMatch ? imgMatch[1] : null;
+    return imgMatch ? decodeHtmlEntities(imgMatch[1]) : null;
 }
 
 /**
@@ -59,8 +77,13 @@ async function checkRedditFashion(bot, rssUrl) {
                 continue;
             }
 
-            const link = item.link;
-            const imageUrl = extractImage(item.content || item['content:encoded'] || '');
+            const link = decodeHtmlEntities(item.link);
+            const rawImageUrl =
+                extractImage(item.content || item['content:encoded'] || '') ||
+                item['media:content']?.$?.url ||
+                item['media:thumbnail']?.$?.url ||
+                '';
+            const imageUrl = rawImageUrl ? cleanImageUrl(rawImageUrl) : null;
 
             console.log(await dateFormatLog() + `[Reddit] ${title} - ${link} - ${imageUrl}`);
 
@@ -82,6 +105,7 @@ async function checkRedditFashion(bot, rssUrl) {
                 url: link,
                 image: imageUrl ? { url: imageUrl } : undefined
             };
+
             await channel.send({ embeds: [embed] });
         }
     } catch (error) {
