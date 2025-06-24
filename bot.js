@@ -77,10 +77,12 @@ loadCommands(bot);
 loadEvents(bot);
 
 const { checkRSS } = require('./Helpers/rssHandler');
+const { checkRedditFashion } = require('./Helpers/redditFashionRSS');
 const RSS_FEEDS = [
   { url: 'https://fr.finalfantasyxiv.com/lodestone/news/news.xml' },
   { url: 'https://fr.finalfantasyxiv.com/lodestone/news/topics.xml' }
 ];
+const REDDIT_FASHION_RSS = 'https://www.reddit.com/r/ffxiv/.rss';
 const { createMonthlyBestOf } = require('@helpers/createMonthlyBestOf');
 
 bot.on('ready', () => {
@@ -108,9 +110,19 @@ bot.on('ready', () => {
   bot.user.setActivity('GILLS', { type: 'WATCHING' });
   loadSlashCommands(bot);
 
+  if (bot.settings.features?.rssFeed !== false) {
+    RSS_FEEDS.forEach(feed => checkRSS(bot, feed.url));
+  }
+  if (bot.settings.features?.redditFashionRSS !== false) {
+    checkRedditFashion(bot, REDDIT_FASHION_RSS);
+  }
+
   setInterval(() => {
     if (bot.settings.features?.rssFeed !== false) {
       RSS_FEEDS.forEach(feed => checkRSS(bot, feed.url));
+    }
+    if (bot.settings.features?.redditFashionRSS !== false) {
+      checkRedditFashion(bot, REDDIT_FASHION_RSS);
     }
     if (bot.settings.features?.monthlyBestOf !== false) {
       createMonthlyBestOf(bot);
