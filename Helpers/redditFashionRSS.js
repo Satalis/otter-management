@@ -1,4 +1,5 @@
 const RSSParser = require('rss-parser');
+const { EmbedBuilder } = require('discord.js');
 const { dateFormatLog } = require('./logTools');
 
 const parser = new RSSParser({
@@ -50,7 +51,6 @@ function decodeHtmlEntities(str) {
 
 function cleanImageUrl(url) {
     return url ? decodeHtmlEntities(url) : url;
-}
 
 function extractImage(content) {
     const imgMatch = content && content.match(/<img[^>]+src="([^"]+)"/);
@@ -83,7 +83,9 @@ async function checkRedditFashion(bot, rssUrl) {
                 item['media:content']?.$?.url ||
                 item['media:thumbnail']?.$?.url ||
                 '';
+
             const imageUrl = rawImageUrl ? cleanImageUrl(rawImageUrl) : null;
+
 
             console.log(await dateFormatLog() + `[Reddit] ${title} - ${link} - ${imageUrl}`);
 
