@@ -20,7 +20,6 @@
   "author": "Jungso",
   "license": "ISC",
   "dependencies": {
-    "18": "^0.0.0",
     "@xivapi/nodestone": "^0.2.7",
     "adm-zip": "^0.5.14",
     "crypto": "^1.0.1",

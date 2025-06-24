@@ -82,6 +82,7 @@ fonctionnalités du bot :
 
 features: {
   rssFeed: true,
+  redditFashionRSS: true,
   monthlyBestOf: true,
   verifyWord: true,
   quoteSystem: true,
