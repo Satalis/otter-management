@@ -107,13 +107,11 @@ async function checkRedditFashion(bot, rssUrl) {
             if (await isDuplicateMessage(channel, title)) {
                 continue;
             }
-            const embed = new EmbedBuilder()
-                .setTitle(title)
-                .setURL(link);
-
-            if (imageUrl) {
-                embed.setImage(imageUrl);
-            }
+            const embed = {
+                title,
+                url: link,
+                image: imageUrl ? { url: imageUrl } : undefined
+            };
 
             await channel.send({ embeds: [embed] });
         }
