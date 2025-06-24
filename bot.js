@@ -77,6 +77,7 @@ loadCommands(bot);
 loadEvents(bot);
 
 const { checkRSS } = require('./Helpers/rssHandler');
+const { checkTwitterFeed } = require('./Helpers/twitterFeed');
 const RSS_FEEDS = [
   { url: 'https://fr.finalfantasyxiv.com/lodestone/news/news.xml' },
   { url: 'https://fr.finalfantasyxiv.com/lodestone/news/topics.xml' }
@@ -111,6 +112,16 @@ bot.on('ready', () => {
   setInterval(() => {
     if (bot.settings.features?.rssFeed !== false) {
       RSS_FEEDS.forEach(feed => checkRSS(bot, feed.url));
+    }
+    if (bot.settings.features?.twitterFeed !== false) {
+      const twitterFeeds = bot.settings.twitterFeeds;
+      if (Array.isArray(twitterFeeds)) {
+        twitterFeeds.forEach(feed => {
+          if (feed.username) {
+            checkTwitterFeed(bot, feed.username, feed.filter || '');
+          }
+        });
+      }
     }
     if (bot.settings.features?.monthlyBestOf !== false) {
       createMonthlyBestOf(bot);
