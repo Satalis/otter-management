@@ -1,5 +1,9 @@
 const RSSParser = require('rss-parser');
-const parser = new RSSParser();
+const { HttpsProxyAgent } = require('https-proxy-agent');
+
+const proxy = process.env.HTTPS_PROXY || process.env.https_proxy;
+const parserOptions = proxy ? { requestOptions: { agent: new HttpsProxyAgent(proxy) } } : {};
+const parser = new RSSParser(parserOptions);
 const { dateFormatLog } = require('./logTools');
 const { isDuplicateMessage, convertToFrenchTime } = require('./rssHandler');
 

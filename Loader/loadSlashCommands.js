@@ -32,11 +32,15 @@ module.exports = async bot => {
                  else if(command.options[i].type === "STRING") {
                     slashCommand[`add${command.options[i].type.charAt(0).toUpperCase()
                         + command.options[i].type.slice(1).toLowerCase()}Option`]
-                    (optionBuilder => 
-                    optionBuilder.setName(command.options[i].name)
-                    .setDescription(command.options[i].description)
-                    .setAutocomplete(command.options[i].autocomplete)
-                    .setRequired(command.options[i].required)) 
+                    (optionBuilder => {
+                        optionBuilder.setName(command.options[i].name)
+                            .setDescription(command.options[i].description)
+                            .setRequired(command.options[i].required)
+                        if (typeof command.options[i].autocomplete === 'boolean') {
+                            optionBuilder.setAutocomplete(command.options[i].autocomplete)
+                        }
+                        return optionBuilder
+                    })
                 }
                 else{
                 // Put in the format capital letter for first caracter. Then put name, description and required.
