@@ -1,5 +1,4 @@
 const RSSParser = require('rss-parser');
-const fetch = require('node-fetch');
 const { dateFormatLog } = require('./logTools');
 
 const parser = new RSSParser({
