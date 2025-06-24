@@ -48,6 +48,11 @@ async function checkRedditFashion(bot, rssUrl) {
     try {
         const feed = await parser.parseURL(rssUrl);
         for (const item of feed.items) {
+            const pubDate = new Date(item.pubDate || item.isoDate).getTime();
+            if (!pubDate || Date.now() - pubDate > 7 * 24 * 60 * 60 * 1000) {
+                continue;
+            }
+
             const author = item.author || item.creator || '';
             const title = item.title || '';
             if (!author.includes('Gottesstrafe') || !title.includes('Fashion Report - Full Details - For Week of')) {
