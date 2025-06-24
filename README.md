@@ -93,11 +93,11 @@ features: {
 
 Passez la valeur à `false` pour désactiver l'une de ces fonctionnalités.
 
-Une section `intervals` permet également de personnaliser certaines fréquences de vérification :
+Une section `intervals` (exprimée en **heures**) permet également de personnaliser certaines fréquences de vérification :
 
 ```js
 intervals: {
-  redditFashionRSS: 24 * 60 * 60 * 1000, // vérifie le flux Fashion Report toutes les 24h
+  redditFashionRSS: 24, // vérifie le flux Fashion Report toutes les 24h
 }
 ```
 

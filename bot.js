@@ -80,7 +80,7 @@ const { checkRSS } = require('./Helpers/rssHandler');
 const { checkRedditFashion } = require('./Helpers/redditFashionRSS');
 const RSS_CHECK_INTERVAL = 15 * 60 * 1000; // 15 minutes
 const REDDIT_CHECK_INTERVAL =
-  bot.settings.intervals?.redditFashionRSS ?? 24 * 60 * 60 * 1000; // 24 heures par défaut
+  (bot.settings.intervals?.redditFashionRSS ?? 24) * 60 * 60 * 1000; // 24 h par défaut
 const RSS_FEEDS = [
   { url: 'https://fr.finalfantasyxiv.com/lodestone/news/news.xml' },
   { url: 'https://fr.finalfantasyxiv.com/lodestone/news/topics.xml' }

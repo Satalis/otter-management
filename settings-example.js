@@ -73,9 +73,9 @@ module.exports = {
     keepAlive: true,
   },
 
-  // Intervalles de vérification (en millisecondes)
+  // Intervalles de vérification (en heures)
   intervals: {
-    // Intervalle pour le flux Fashion Report de Reddit (ex. 24h)
-    redditFashionRSS: 24 * 60 * 60 * 1000,
+    // Intervalle pour le flux Fashion Report de Reddit (ex. 24 pour 24h)
+    redditFashionRSS: 24,
   }
 };
