@@ -49,15 +49,8 @@ function decodeHtmlEntities(str) {
         : str;
 }
 
-function getFullSizeImage(url) {
-    if (!url) {
-        return url;
-    }
-    const clean = decodeHtmlEntities(url).split('?')[0];
-    return clean
-        .replace('external-preview.redd.it', 'i.redd.it')
-        .replace('preview.redd.it', 'i.redd.it');
-}
+function cleanImageUrl(url) {
+    return url ? decodeHtmlEntities(url) : url;
 
 function extractImage(content) {
     const imgMatch = content && content.match(/<img[^>]+src="([^"]+)"/);
@@ -90,7 +83,9 @@ async function checkRedditFashion(bot, rssUrl) {
                 item['media:content']?.$?.url ||
                 item['media:thumbnail']?.$?.url ||
                 '';
-            const imageUrl = rawImageUrl ? getFullSizeImage(rawImageUrl) : null;
+
+            const imageUrl = rawImageUrl ? cleanImageUrl(rawImageUrl) : null;
+
 
             console.log(await dateFormatLog() + `[Reddit] ${title} - ${link} - ${imageUrl}`);
 
