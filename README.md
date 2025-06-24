@@ -44,6 +44,7 @@ npm install (installer les dépendances)
 ### Créer un .env
 
 Créer un .env
+TEST_ENV=dev   #Vous pouvez mettre 'prod' pour utiliser le settings.js pour l'env prod
 DISCORD_TOKEN=ton_token
 FIREBASE_CREDENTIALS=chemin_du_fichier_json
 GITHUB_BRANCH=main
