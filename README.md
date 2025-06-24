@@ -93,5 +93,15 @@ features: {
 
 Passez la valeur à `false` pour désactiver l'une de ces fonctionnalités.
 
+Une section `intervals` permet également de personnaliser certaines fréquences de vérification :
+
+```js
+intervals: {
+  redditFashionRSS: 24 * 60 * 60 * 1000, // vérifie le flux Fashion Report toutes les 24h
+}
+```
+
+Si aucune valeur n'est précisée, un intervalle par défaut de 24&nbsp;heures est utilisé pour le flux Reddit.
+
 ### Le démarrer
 node bot.js
