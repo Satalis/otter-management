@@ -38,9 +38,20 @@ async function isDuplicateMessage(channel, title) {
  * @param {string} content - Contenu HTML de l'article.
  * @returns {string|null} - URL de l'image ou null si aucune image trouvée.
  */
+function decodeHtmlEntities(str) {
+    return str
+        ? str
+              .replace(/&amp;/g, '&')
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&quot;/g, '"')
+              .replace(/&#39;/g, "'")
+        : str;
+}
+
 function extractImage(content) {
     const imgMatch = content && content.match(/<img[^>]+src="([^"]+)"/);
-    return imgMatch ? imgMatch[1] : null;
+    return imgMatch ? decodeHtmlEntities(imgMatch[1]) : null;
 }
 
 /**
@@ -63,11 +74,13 @@ async function checkRedditFashion(bot, rssUrl) {
                 continue;
             }
 
-            const link = item.link;
-            const imageUrl =
+            const link = decodeHtmlEntities(item.link);
+            const rawImageUrl =
                 extractImage(item.content || item['content:encoded'] || '') ||
                 item['media:thumbnail']?.$?.url ||
-                item['media:content']?.$?.url;
+                item['media:content']?.$?.url ||
+                '';
+            const imageUrl = rawImageUrl ? decodeHtmlEntities(rawImageUrl) : null;
 
             console.log(await dateFormatLog() + `[Reddit] ${title} - ${link} - ${imageUrl}`);
 
