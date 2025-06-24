@@ -51,7 +51,7 @@ async function checkRedditFashion(bot, rssUrl) {
         for (const item of feed.items) {
             const author = item.author || item.creator || '';
             const title = item.title || '';
-            if (author !== 'Gottesstrafe' || !title.includes('Fashion Report - Full Details - For Week of')) {
+            if (!author.includes('Gottesstrafe') || !title.includes('Fashion Report - Full Details - For Week of')) {
                 continue;
             }
 
