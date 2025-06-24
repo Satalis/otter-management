@@ -61,11 +61,18 @@ module.exports = {
   // Activer ou désactiver certaines fonctionnalités du bot
   features: {
     rssFeed: true,
+    twitterFeed: true,
     monthlyBestOf: true,
     verifyWord: true,
     quoteSystem: true,
     welcomeMessages: true,
     goodbyeMessages: true,
     keepAlive: true,
-  }
+  },
+
+  // Liste des comptes Twitter à surveiller via Nitter
+  twitterFeeds: [
+    { username: "KaiyokoStar", filter: "Fashion Report Week" },
+    // { username: "Machin", filter: "Fashion" }
+  ]
 };

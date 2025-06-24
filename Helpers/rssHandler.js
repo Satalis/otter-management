@@ -166,4 +166,4 @@ async function checkRSS(bot, rssUrl) {
     }
 }
 
-module.exports = { checkRSS };
+module.exports = { checkRSS, isDuplicateMessage, convertToFrenchTime };
