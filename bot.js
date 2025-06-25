@@ -118,6 +118,9 @@ bot.on('ready', () => {
           checkRSS(bot, feed.url);
         });
       }
+      if (bot.featureEnabled('redditFashion')) {
+        checkRedditFashion(bot, bot.settings.redditFashionRSS, bot.settings.ids.redditFashionChannel);
+      }
       if (bot.featureEnabled('bestOfMonthly')) {
         createMonthlyBestOf(bot);
       }
