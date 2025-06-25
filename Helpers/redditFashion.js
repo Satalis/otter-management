@@ -88,6 +88,7 @@ async function checkRedditFashion(bot, rssUrl, channelId) {
             }
 
             const htmlContent = item['content:encoded'] || item.content;
+
             const mediaContent =
                 item['media:content']?.$.url ||
                 item['media:content']?.url ||
