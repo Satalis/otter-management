@@ -64,6 +64,7 @@ module.exports = {
     quote: true,
     suggestion: true,
     update: true,
+    listerole: true,
     help: false,
     link: false,
     verify: false,
