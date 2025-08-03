@@ -1,5 +1,4 @@
 const RSSParser = require('rss-parser');
-const parser = new RSSParser();
 const { dateFormatLog } = require('./logTools');
 
 /**
@@ -71,6 +70,14 @@ function extractImage(content) {
  */
 async function checkRSS(bot, rssUrl) {
     try {
+        console.log(await dateFormatLog() + `Début vérification du flux RSS : ${rssUrl}`);
+
+        // Définir un user-agent personnalisé pour respecter la politique d'accès de Reddit
+        const userAgent = bot.settings.rssUserAgent || 'otter-management-bot/1.0 (by u/OtterChantal-bot)';
+        const parser = new RSSParser({
+            headers: { 'User-Agent': userAgent }
+        });
+
         // Récupérer le flux RSS
         const feed = await parser.parseURL(rssUrl);
 
@@ -90,8 +97,11 @@ async function checkRSS(bot, rssUrl) {
             const timeDiff = now - pubDate; // Différence en millisecondes
 
             if (timeDiff > freshnessHours * 60 * 60 * 1000) {
-                // Ignorer les articles plus anciens que 1 heure
-                continue;
+                console.log(
+                    await dateFormatLog() +
+                    `Article ignoré (trop ancien: ${Math.round(timeDiff / 60000)} min) : ${item.title}`
+                );
+                continue; // Ignorer les articles trop anciens
             }
 
             // Image pour "topics" uniquement
@@ -155,8 +165,9 @@ async function checkRSS(bot, rssUrl) {
 
             // Envoyer l'embed sur Discord
             await lodestoneRSSChannel.send({ embeds: [embed] });
-            console.log(await dateFormatLog() + `Publication d'une news lodestone: ${item.title}`)        
+            console.log(await dateFormatLog() + `Publication d'une news lodestone: ${item.title}`)
         }
+        console.log(await dateFormatLog() + `Fin vérification du flux RSS : ${rssUrl}`);
     } catch (error) {
         console.error('Erreur lors de la vérification du flux RSS :', error);
     }
