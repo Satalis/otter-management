@@ -13,6 +13,7 @@ async function checkRedditPosts(client) {
         break;
       }
 
+      const used = typeof reddit.ratelimitUsed === 'number' ? reddit.ratelimitUsed : null;
       const remaining = typeof reddit.ratelimitRemaining === 'number' ? reddit.ratelimitRemaining : null;
       const reset = typeof reddit.ratelimitExpiration === 'number'
         ? Math.ceil((reddit.ratelimitExpiration - Date.now()) / 1000)
@@ -45,6 +46,7 @@ async function checkRedditPosts(client) {
           console.error('Erreur vérification post Reddit:', err);
         }
       } finally {
+        const used = typeof reddit.ratelimitUsed === 'number' ? reddit.ratelimitUsed : null;
         const remaining = typeof reddit.ratelimitRemaining === 'number' ? reddit.ratelimitRemaining : null;
         const reset = typeof reddit.ratelimitExpiration === 'number'
           ? Math.ceil((reddit.ratelimitExpiration - Date.now()) / 1000)
