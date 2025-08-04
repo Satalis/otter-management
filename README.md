@@ -91,8 +91,16 @@ Certains délais peuvent être ajustés dans `settings.js` :
 
 ```js
 redditFashionInterval: 60 // Vérifie le subreddit Reddit Fashion toutes les 60 minutes
+redditRateLimit: 100      // Limite maximale de requêtes Reddit par minute (politique Reddit)
+redditUserAgent: 'web:otter-management-bot:1.0.0 (by /u/OtterChantal-bot)' // User-Agent conforme à l'API Reddit
 rssFreshnessHours: 5     // Ignore les posts RSS plus vieux que 5 heures
 ```
+
+### Mode debug Reddit
+
+Activez `debug.reddit` dans `settings.js` pour afficher les requêtes Reddit et les en-têtes de limitation d'API (`X-Ratelimit-Used`, `X-Ratelimit-Remaining`, `X-Ratelimit-Reset`).
+Les logs détaillent également le User-Agent, la limite configurée et le délai appliqué entre chaque requête.
+Ces messages, préfixés par `[Reddit]`, sont isolés du flux Lodestone afin d'éviter toute interférence.
 
 ### Les commandes
 

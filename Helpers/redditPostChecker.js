@@ -6,8 +6,9 @@ async function checkRedditPosts(client) {
   try {
     const snapshot = await client.db.collection('redditPosts').get();
     let processed = 0;
+    const rateLimit = client.settings?.redditRateLimit || 100;
     for (const doc of snapshot.docs) {
-      if (processed >= 90) {
+      if (processed >= rateLimit - 10) {
         console.warn('Quota Reddit atteint, arrêt de la vérification des posts.');
         break;
       }
@@ -16,7 +17,8 @@ async function checkRedditPosts(client) {
       const reset = typeof reddit.ratelimitExpiration === 'number'
         ? Math.ceil((reddit.ratelimitExpiration - Date.now()) / 1000)
         : null;
-      debugLog(client, 'reddit', `Reddit rate limit - Remaining: ${remaining}, Reset: ${reset}s`);
+      const used = typeof remaining === 'number' ? rateLimit - remaining : null;
+      debugLog(client, 'reddit', `Reddit rate limit - Used: ${used}, Remaining: ${remaining}, Reset: ${reset}s`);
       if (remaining !== null && remaining <= 10) {
         console.warn('Ratelimit Reddit faible, arrêt de la vérification des posts.');
         break;
@@ -25,6 +27,7 @@ async function checkRedditPosts(client) {
       const postId = doc.id;
       const { messageId, channelId } = doc.data();
       try {
+        debugLog(client, 'reddit', `Vérification du post ${postId}`);
         await reddit.getSubmission(postId).fetch();
       } catch (err) {
         if (err.statusCode === 404) {
@@ -46,6 +49,8 @@ async function checkRedditPosts(client) {
         const reset = typeof reddit.ratelimitExpiration === 'number'
           ? Math.ceil((reddit.ratelimitExpiration - Date.now()) / 1000)
           : null;
+        const used = typeof remaining === 'number' ? rateLimit - remaining : null;
+        debugLog(client, 'reddit', `Reddit rate limit - Used: ${used}, Remaining: ${remaining}, Reset: ${reset}s`);
         if (remaining !== null && remaining < 10) {
           console.warn('Quota bas, pause des requêtes.');
           if (reset !== null && reset > 0) {
