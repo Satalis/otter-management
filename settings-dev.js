@@ -9,9 +9,6 @@ module.exports = {
   // Canal d'annonce au démarrage
   channelId: '000000000000000000',
 
-  // Intervalle de vérification du Reddit Fashion (en minutes)
-  redditFashionInterval: 60,
-
   // Intervalle de vérification des posts Reddit existants (en minutes)
   redditPostCheckInterval: 60,
 
@@ -82,7 +79,6 @@ module.exports = {
     quoteSystem: true, // Enregistre les citations et gère le best-of en fin de mois
     rss: true, // Vérifie les flux RSS Lodestone
     bestOfMonthly: true, // Génère le best-of mensuel
-    redditFashion: true, // Récupère les posts du subreddit fashion
     welcomeMessage: true, // Envoie un message de bienvenue aux nouveaux
     assignRoles: true, // Attribue les rôles de base lors de l'arrivée
     goodbyeMessage: true, // Indique quand un membre quitte le serveur

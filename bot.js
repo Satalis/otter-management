@@ -110,7 +110,7 @@ bot.on('ready', async () => {
   loadSlashCommands(bot);
 
     // Intervalles de vérification
-    const redditFashionInterval = (bot.settings.redditFashionInterval || 60) * 60 * 1000;
+    const redditFashionInterval = 60 * 60 * 1000; // 60 minutes
     const rssInterval = (bot.settings.rssCheckInterval || 15) * 60 * 1000;
     const redditPostCheckInterval = (bot.settings.redditPostCheckInterval || 60) * 60 * 1000;
     console.log(await dateFormatLog() + `Intervalle RSS configuré à ${rssInterval / 60000} min`);
@@ -124,9 +124,6 @@ bot.on('ready', async () => {
             checkRSS(bot, feed.url);
           });
         }
-        if (bot.featureEnabled('redditFashion')) {
-          checkRedditFashion(bot);
-        }
         if (bot.featureEnabled('comptMessage') && bot.featureEnabled('bestOfMonthly') && bot.featureEnabled('quoteSystem'))
         createMonthlyReport(bot);
         console.log(await dateFormatLog() + 'Fin de la vérification périodique des flux RSS');
@@ -134,12 +131,10 @@ bot.on('ready', async () => {
       }, rssInterval); // Vérification périodique des flux RSS
 
     // Vérification périodique du subreddit fashion
-    if (bot.featureEnabled('redditFashion')) {
+    checkRedditFashion(bot);
+    setInterval(() => {
       checkRedditFashion(bot);
-      setInterval(() => {
-        checkRedditFashion(bot);
-      }, redditFashionInterval);
-    }
+    }, redditFashionInterval);
 
     // Vérification périodique des posts Reddit pour suppressions éventuelles
     checkRedditPosts(bot);

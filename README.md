@@ -76,7 +76,6 @@ features: {
   quoteSystem: true,
   rss: true,
   bestOfMonthly: true,
-  redditFashion: true,
   welcomeMessage: true,
   assignRoles: true,
   goodbyeMessage: true,
@@ -90,7 +89,6 @@ Passez une valeur à `false` pour désactiver la fonctionnalité correspondante 
 Certains délais peuvent être ajustés dans `settings.js` :
 
 ```js
-redditFashionInterval: 60 // Vérifie le subreddit Reddit Fashion toutes les 60 minutes
 rssFreshnessHours: 5     // Ignore les posts RSS plus vieux que 5 heures
 ```
 
