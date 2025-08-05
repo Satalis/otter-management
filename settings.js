@@ -18,6 +18,10 @@ module.exports = {
   // User-Agent utilisé pour les requêtes RSS
   rssUserAgent: 'web:otter-management-bot:1.0.0 (by /u/OtterChantal-bot)',
 
+  // Gestion des tentatives de récupération du flux RSS
+  rssRetryAttempts: 3,
+  rssRetryDelay: 5000, // en millisecondes
+
   ids: {
     // Canal où sont envoyés les messages de bienvenue
     welcomeChannel: '000000000000000000',

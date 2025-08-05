@@ -64,6 +64,15 @@ function extractImage(content) {
 }
 
 /**
+ * Attend un certain nombre de millisecondes.
+ * @param {number} ms - Durée en millisecondes.
+ * @returns {Promise<void>}
+ */
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
  * Fonction pour vérifier et envoyer les mises à jour des flux RSS.
  * @param {Client} bot - L'instance du bot Discord.
  * @param {string} rssUrl - L'URL du flux RSS à surveiller.
@@ -77,8 +86,28 @@ async function checkRSS(bot, rssUrl) {
             headers: { 'User-Agent': userAgent }
         });
 
-        // Récupérer le flux RSS
-        const feed = await parser.parseURL(rssUrl);
+        const maxRetries = bot.settings.rssRetryAttempts || 3;
+        const retryDelay = bot.settings.rssRetryDelay || 5000;
+        let feed;
+
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                feed = await parser.parseURL(rssUrl);
+                break;
+            } catch (err) {
+                if (err.statusCode === 503 && attempt < maxRetries) {
+                    console.error(await dateFormatLog() + `Flux RSS indisponible (503). Nouvelle tentative dans ${retryDelay / 1000}s (essai ${attempt}/${maxRetries})`);
+                    await delay(retryDelay);
+                } else {
+                    throw err;
+                }
+            }
+        }
+
+        if (!feed) {
+            console.error(await dateFormatLog() + `Échec de récupération du flux RSS après ${maxRetries} tentatives.`);
+            return;
+        }
 
         // Récupérer l'heure actuelle
         const now = Date.now();
