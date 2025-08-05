@@ -119,6 +119,7 @@ bot.on('ready', async () => {
     console.log(
       await dateFormatLog() + `[rssCheckInterval] Intervalle RSS configuré à ${rssInterval / 60000} min`
     );
+
     console.log(
       await dateFormatLog() +
         `[fashionInterval] Intervalle Reddit Fashion configuré à ${redditFashionInterval / 60000} min`
