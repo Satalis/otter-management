@@ -116,8 +116,6 @@ async function checkRSS(bot, rssUrl) {
         );
 
         // Récupérer le flux RSS avec réessais en cas de 500 ou 503
-        const feed = await fetchWithRetry(parser, rssUrl);
-
         // Lire les items du flux
         for (const item of feed.items) {
             // Déterminer la date de publication
